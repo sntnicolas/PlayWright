@@ -1,36 +1,59 @@
+# conftest.py
 import pytest
+import time
 from pathlib import Path
 
-@pytest.fixture(autouse=True)
-def screenshot_dir(page,request):
-    """Автоматически делает скриншот если тест упал"""
-    yield
-    if request.node.rep_call.failed: # если тест упал
-        path = Path(__file__).parent / "screenshots" / f"{request.node.name}.png"
+"""  Кусок кода на случай если захочу не параметром, а в коде задавать настройки """
+# from playwright.sync_api import sync_playwright
+# @pytest.fixture(scope="session")
+# def playwright():
+#     with sync_playwright() as p:
+#         yield p
+#
+# @pytest.fixture(scope="session")
+# def browser(playwright):
+#     browser = playwright.chromium.launch(headless=False)
+#     yield browser
+#     browser.close()
+#
+# @pytest.fixture(scope="function")
+# def page(browser):
+#     context = browser.new_context()
+#     page = context.new_page()
+#     yield page
+#     context.close()
 
 
-import pytest
-from pathlib import Path
-
-# Хук, который цепляет результат выполнения теста
-@pytest.hookimpl(hookwrapper=True, tryfirst=True)
+@pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_makereport(item, call):
+    """Хук: сохраняет результат выполнения теста (setup/call/teardown)."""
     outcome = yield
     rep = outcome.get_result()
-    setattr(item, "rep_" + rep.when, rep)
-
+    setattr(item, f"rep_{rep.when}", rep)
 
 @pytest.fixture(autouse=True)
-def screenshot_on_fail(page, request):
-    """Делает скриншот, если тест упал"""
-    yield  # здесь запускается сам тест
+def screenshot_after_each_test(request, page):
+    """После каждого теста делает скриншот.
+       Если тест упал → имя файла оканчивается на _failed.
+    """
+    yield
 
-    # Проверка: тест упал именно в фазе выполнения (call)
-    if request.node.rep_call.failed:
-        screenshots_dir = Path(__file__).parent / "screenshots"
-        screenshots_dir.mkdir(exist_ok=True)
+    # Базовая папка для скринов
+    screenshots_dir = Path("tests/screenshots")
+    if not screenshots_dir.exists():
+        raise RuntimeError("❌ Папка tests/screenshots не найдена!")
 
-        file_path = screenshots_dir / f"{request.node.name}.png"
-        page.screenshot(path=file_path)
+    # Имя теста и таймштамп
+    test_name = request.node.name
+    timestamp = time.strftime("%Y%m%d-%H%M%S")
 
-        print(f"\n📸 Скриншот сохранён: {file_path}")
+    # Проверяем результат
+    failed = getattr(request.node, "rep_call", None)
+    suffix = "_failed" if failed and failed.failed else ""
+
+    # Итоговый путь
+    path = screenshots_dir / f"{test_name}_{timestamp}{suffix}.png"
+
+    # Сохраняем скрин
+    page.screenshot(path=path)
+    print(f"\n📸 Скриншот сохранён: {path}")
