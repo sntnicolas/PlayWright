@@ -40,20 +40,30 @@ def screenshot_after_each_test(request, page):
 
     # Базовая папка для скринов
     screenshots_dir = Path("tests/screenshots")
-    if not screenshots_dir.exists():
-        raise RuntimeError("❌ Папка tests/screenshots не найдена!")
+    screenshots_dir.mkdir(parents=True, exist_ok=True)
+
+    # """Вариант когда нам важно видеть что структура сломана"""
+    # if not screenshots_dir.exists():
+    #     raise RuntimeError("❌ Папка tests/screenshots не найдена!")
 
     # Имя теста и таймштамп
     test_name = request.node.name
     timestamp = time.strftime("%Y%m%d-%H%M%S")
 
+    # Проверяем все стадии (setup/call/teardown)
+    failed = (
+        getattr(request.node, "rep_call", None)
+        or getattr(request.node, "rep_setup", None)
+        or getattr(request.node, "rep_teardown", None)
+    )
+
     # Проверяем результат
-    failed = getattr(request.node, "rep_call", None)
+    # failed = getattr(request.node, "rep_call", None)
     suffix = "_failed" if failed and failed.failed else ""
 
     # Итоговый путь
-    path = screenshots_dir / f"{test_name}_{timestamp}{suffix}.png"
+    screen_path = screenshots_dir / f"{test_name}_{timestamp}{suffix}.png"
 
     # Сохраняем скрин
-    page.screenshot(path=path)
-    print(f"\n📸 Скриншот сохранён: {path}")
+    page.screenshot(path=screen_path)
+    print(f"\n📸 Скриншот сохранён: {screen_path}")
