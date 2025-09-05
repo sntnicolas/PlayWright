@@ -39,12 +39,12 @@ def screenshot_after_each_test(request, page):
     yield
 
     # Базовая папка для скринов
-    screenshots_dir = Path("tests/screenshots")
+    screenshots_dir = Path("screenshots")
     screenshots_dir.mkdir(parents=True, exist_ok=True)
 
     # """Вариант когда нам важно видеть что структура сломана"""
     # if not screenshots_dir.exists():
-    #     raise RuntimeError("❌ Папка tests/screenshots не найдена!")
+    #     raise RuntimeError("❌ Папка screenshots не найдена!")
 
     # Имя теста и таймштамп
     test_name = request.node.name
