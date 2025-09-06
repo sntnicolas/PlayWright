@@ -64,3 +64,14 @@ def power(x, n=2):
     return x ** n
 print(power(3))   # 9
 print(power(2, 3)) # 8
+
+
+# С индексом максимума:
+numbers = [3, 7, 2, 9, 5]
+max_index = 0
+for i in range(1, len(numbers)):
+    if numbers[i] > numbers[max_index]:
+        max_index = i
+
+print("Максимум:", numbers[max_index])  # 9
+print("Индекс:", max_index)             # 3
