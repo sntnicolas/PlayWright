@@ -30,18 +30,26 @@ def process_data(*args, **kwargs):
 process_data(1, 2, 3, a=10, b=20)
 
 def analyze_data(*args, **kwargs):
-    # squares = (lambda x: x ** 2, args)
-    # print(squares)
-    # print(lambda x: x ** 2, args)
-
-    list_squares: [x ** 2 for x in args]
+    list_squares = [x ** 2 for x in args]
+    # list_squares = list(map(lambda x: x ** 2, args))
     print(list_squares)
     print(f"Сумма квадратов : {sum(list_squares)}")
     print(f"Макс число : {max(args)}")
 
-
-    list_squares2 = {key: key ** 2 for key in kwargs if n == int else n:}
-    print(f"{key} = {value} {string}" if arg != int else  2 if arg ")
-
+    for key, value in kwargs.items():
+        print(f"{key} = {value}" + (f" (квадрат: {value ** 2})" if isinstance(value, int) else ""))
 
 analyze_data(1, 2, 3, a=5, b="hello", c=10)
+
+""" тренируем ламбду"""
+students = [
+    ("Коля", 85),
+    ("Маша", 92),
+    ("Иван", 73),
+    ("Света", 59),
+    ("Петя", 100),
+]
+def sorter(data):
+    best = sorted(data, key= lambda x: x[1])
+
+sorter(students)
