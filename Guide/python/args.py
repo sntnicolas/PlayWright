@@ -38,7 +38,10 @@ def analyze_data(*args, **kwargs):
     print(list_squares)
     print(f"Сумма квадратов : {sum(list_squares)}")
     print(f"Макс число : {max(args)}")
-    print(f"{key} = {value if arg ** 2 if arg ")
+
+
+    list_squares2 = {key: key ** 2 for key in kwargs if n == int else n:}
+    print(f"{key} = {value} {string}" if arg != int else  2 if arg ")
 
 
 analyze_data(1, 2, 3, a=5, b="hello", c=10)
