@@ -1,5 +1,6 @@
 def test_login_parabank(page):
     page.goto("https://automationexercise.com/", timeout=5000)
+    page.get_by_role("button", name="Consent").click()
     page.get_by_role("link", name=" Signup / Login").click()
 
     page.locator("form").filter(has_text="Login").get_by_placeholder("Email Address").fill("sntnicolas@gmail.com")
